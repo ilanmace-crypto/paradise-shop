@@ -20,7 +20,12 @@ const HomePage = () => {
         setLoading(true);
         setError(null);
         const data = await getProducts();
-        setProducts(data);
+        // Распарсим flavors, если они пришли строкой
+        const parsed = data.map(product => ({
+          ...product,
+          flavors: product.flavors ? JSON.parse(product.flavors) : {}
+        }));
+        setProducts(parsed);
       } catch (err) {
         setError('Не удалось загрузить товары. Попробуйте обновить страницу.');
         console.error(err);

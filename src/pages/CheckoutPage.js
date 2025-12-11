@@ -57,6 +57,7 @@ const CheckoutPage = () => {
       });
 
       setSuccessMessage('Спасибо за заказ! Мы свяжемся с вами в ближайшее время.');
+      console.log('✅ Success message set');
 
       // Очистка формы
       setOrderData({
