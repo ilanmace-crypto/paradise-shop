@@ -20,15 +20,26 @@ const HomePage = () => {
         setLoading(true);
         setError(null);
         const data = await getProducts();
+        console.log('Raw products from API:', data);
         // Распарсим flavors, если они пришли строкой
-        const parsed = data.map(product => ({
-          ...product,
-          flavors: product.flavors ? JSON.parse(product.flavors) : {}
-        }));
+        const parsed = data.map(product => {
+          let flavors = {};
+          try {
+            flavors = product.flavors ? JSON.parse(product.flavors) : {};
+          } catch (e) {
+            console.error('Failed to parse flavors for product', product.id, e);
+            flavors = {};
+          }
+          return {
+            ...product,
+            flavors
+          };
+        });
+        console.log('Parsed products:', parsed);
         setProducts(parsed);
       } catch (err) {
         setError('Не удалось загрузить товары. Попробуйте обновить страницу.');
-        console.error(err);
+        console.error('Failed to load products:', err);
       } finally {
         setLoading(false);
       }
