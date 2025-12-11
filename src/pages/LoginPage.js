@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -12,7 +11,7 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (login(username, password)) {
+    if (login(password)) {
       navigate('/admin');
     } else {
       setError('Неверный логин или пароль');
@@ -27,16 +26,6 @@ const LoginPage = () => {
           <p>PARADISE_SHOP</p>
           
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <input
-                type="text"
-                placeholder="Логин"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            
             <div className="form-group">
               <input
                 type="password"

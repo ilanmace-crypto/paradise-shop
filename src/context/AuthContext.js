@@ -16,17 +16,18 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
 
-  const login = async (username, password) => {
+  // Логин только по паролю: username всегда "admin"
+  const login = async (password) => {
     try {
-      const userData = await apiLogin(username, password);
-      
-      if (userData.is_admin) {
+      const userData = await apiLogin(password);
+
+      if (userData && userData.role === 'admin') {
         setIsAuthenticated(true);
         setIsAdmin(true);
         setUser(userData);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('Login error:', error);
