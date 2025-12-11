@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import { login as apiLogin } from '../services/apiService';
 
 const AuthContext = createContext();
 
@@ -13,24 +14,36 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const login = (username, password) => {
-    if (username === 'admin' && password === 'paradise123') {
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      return true;
+  const login = async (username, password) => {
+    try {
+      const userData = await apiLogin(username, password);
+      
+      if (userData.is_admin) {
+        setIsAuthenticated(true);
+        setIsAdmin(true);
+        setUser(userData);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     setIsAdmin(false);
+    setUser(null);
   };
 
   const value = {
     isAuthenticated,
     isAdmin,
+    user,
     login,
     logout
   };

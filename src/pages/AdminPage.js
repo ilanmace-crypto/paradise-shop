@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getProducts, saveProducts } from '../data/products';
+import { getProducts, createProduct, updateProduct, deleteProduct as deleteProductApi } from '../data/products';
+import { categories } from '../data/products';
 import { fileToBase64, isValidImageFile, formatFileSize } from '../utils/imageUtils';
 import './AdminPage.css';
 
@@ -9,10 +10,58 @@ const AdminPage = () => {
   const [newFlavorName, setNewFlavorName] = useState('');
   const [newFlavorStock, setNewFlavorStock] = useState(1);
   const [uploadingImage, setUploadingImage] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('liquids');
 
   useEffect(() => {
-    setProducts(getProducts());
+    const loadProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch (err) {
+        console.error('Failed to load products:', err);
+      }
+    };
+
+    loadProducts();
   }, []);
+
+  const addProduct = async () => {
+    try {
+      const newProduct = {
+        name: 'Новый товар',
+        category: selectedCategory,
+        price: 0,
+        image: '',
+        description: '',
+        in_stock: true,
+        flavors: selectedCategory === 'liquids' ? {} : undefined
+      };
+
+      const created = await createProduct(newProduct);
+      setProducts(prev => [...prev, created]);
+      setEditingProduct(created.id);
+    } catch (err) {
+      console.error('Failed to add product:', err);
+      alert('Ошибка при добавлении товара');
+    }
+  };
+
+  const deleteProductHandler = async (productId) => {
+    if (!window.confirm('Уверен, что хочешь удалить этот товар?')) {
+      return;
+    }
+
+    try {
+      await deleteProductApi(productId);
+      setProducts(prev => prev.filter(p => p.id !== productId));
+      if (editingProduct === productId) {
+        setEditingProduct(null);
+      }
+    } catch (err) {
+      console.error('Failed to delete product:', err);
+      alert('Ошибка при удалении товара');
+    }
+  };
 
   const handleProductChange = (productId, field, value) => {
     setProducts(prev => prev.map(product => 
@@ -80,9 +129,16 @@ const AdminPage = () => {
     }
   };
 
-  const saveChanges = () => {
-    saveProducts(products);
-    alert('Изменения сохранены!');
+  const saveChanges = async () => {
+    try {
+      for (const product of products) {
+        await updateProduct(product.id, product);
+      }
+      alert('Изменения сохранены!');
+    } catch (err) {
+      console.error('Failed to save changes:', err);
+      alert('Ошибка при сохранении изменений');
+    }
   };
 
   const toggleEdit = (productId) => {
@@ -95,6 +151,23 @@ const AdminPage = () => {
         <h1>Админ панель</h1>
         
         <div className="admin-actions">
+          <div className="category-selector">
+            <label>Категория нового товара:</label>
+            <select 
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="category-select"
+            >
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button onClick={addProduct} className="add-product-btn">
+            Добавить товар
+          </button>
           <button onClick={saveChanges} className="save-btn">
             Сохранить изменения
           </button>
@@ -105,12 +178,20 @@ const AdminPage = () => {
             <div key={product.id} className="admin-product-card">
               <div className="admin-product-header">
                 <h3>{product.name}</h3>
-                <button 
-                  onClick={() => toggleEdit(product.id)}
-                  className="edit-btn"
-                >
-                  {editingProduct === product.id ? 'Закрыть' : 'Редактировать'}
-                </button>
+                <div className="admin-product-actions">
+                  <button 
+                    onClick={() => toggleEdit(product.id)}
+                    className="edit-btn"
+                  >
+                    {editingProduct === product.id ? 'Закрыть' : 'Редактировать'}
+                  </button>
+                  <button 
+                    onClick={() => deleteProductHandler(product.id)}
+                    className="delete-btn"
+                  >
+                    Удалить
+                  </button>
+                </div>
               </div>
 
               {editingProduct === product.id ? (
@@ -146,8 +227,8 @@ const AdminPage = () => {
                     <label>В наличии:</label>
                     <input
                       type="checkbox"
-                      checked={product.inStock}
-                      onChange={(e) => handleProductChange(product.id, 'inStock', e.target.checked)}
+                      checked={product.in_stock}
+                      onChange={(e) => handleProductChange(product.id, 'in_stock', e.target.checked)}
                     />
                   </div>
 
@@ -224,7 +305,7 @@ const AdminPage = () => {
                   
                   <p><strong>Цена:</strong> {product.price} BYN</p>
                   <p><strong>Описание:</strong> {product.description}</p>
-                  <p><strong>В наличии:</strong> {product.inStock ? 'Да' : 'Нет'}</p>
+                  <p><strong>В наличии:</strong> {product.in_stock ? 'Да' : 'Нет'}</p>
                   
                   {product.category === 'liquids' && product.flavors && (
                     <div className="flavors-info">

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
-import { getProducts, saveProducts } from '../data/products';
+import { getProducts } from '../data/products';
 import { sendOrderNotification } from '../services/telegram';
 import { useUser } from './UserContext';
 
@@ -122,8 +122,6 @@ export const CartProvider = ({ children }) => {
       return productCopy;
     });
     
-    saveProducts(updatedProducts);
-
     // Сохраняем заказ в историю
     try {
       const order = {

@@ -3,7 +3,7 @@
 // Конфигурация бота
 const TELEGRAM_CONFIG = {
   botToken: '8232792312:AAFV_F78v1gwwe5Caoy6zQriPOLSCLdRtKc', // Токен вашего бота от @BotFather
-  adminChatId: '1495748660', // ID чата администратора
+  adminChatId: '-4824123962', // ID чата администратора
   apiUrl: 'https://api.telegram.org/bot'
 };
 

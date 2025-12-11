@@ -10,18 +10,26 @@ const HomePage = () => {
   const [selectedFlavors, setSelectedFlavors] = useState({});
   const [showFlavorDropdown, setShowFlavorDropdown] = useState({});
   const [imageErrors, setImageErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { addToCartWithFlavor } = useCart();
 
   useEffect(() => {
-    const updateProducts = () => {
-      setProducts(getProducts());
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getProducts();
+        setProducts(data);
+      } catch (err) {
+        setError('Не удалось загрузить товары. Попробуйте обновить страницу.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    updateProducts();
-    
-    const interval = setInterval(updateProducts, 1000);
-    
-    return () => clearInterval(interval);
+
+    loadProducts();
   }, []);
 
   const filteredProducts = selectedCategory === 'all' 
@@ -95,8 +103,12 @@ const HomePage = () => {
         </div>
 
         <div className="products-grid">
-          {filteredProducts.length === 0 ? (
+          {loading ? (
             <div>Загрузка товаров...</div>
+          ) : error ? (
+            <div className="error-message">{error}</div>
+          ) : filteredProducts.length === 0 ? (
+            <div>Товары не найдены</div>
           ) : (
             filteredProducts.map(product => (
               <div key={product.id} className="product-card">
