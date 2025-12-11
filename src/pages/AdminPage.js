@@ -300,7 +300,11 @@ const AdminPage = () => {
 
                   {console.log('Render product', product.id, { category: product.category, editingProduct, selectedCategory })}
 
-                  {editingProduct === product.id && selectedCategory === 'liquids' && (
+                  {(() => {
+                    const shouldShow = editingProduct === product.id && selectedCategory === 'liquids';
+                    console.log('Should show flavors for product', product.id, shouldShow);
+                    return shouldShow;
+                  })() && (
                     <div className="flavors-admin">
                       <h4>Вкусы и количество банок:</h4>
                       <p>DEBUG: Блок вкусов должен быть виден здесь!</p>
