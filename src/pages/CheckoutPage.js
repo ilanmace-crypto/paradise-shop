@@ -76,18 +76,18 @@ const CheckoutPage = () => {
     }
   };
 
-  if (cartItems.length === 0) {
-    if (successMessage) {
-      return (
-        <div className="checkout-page">
-          <div className="container">
-            <h1>Спасибо за заказ</h1>
-            <p>{successMessage}</p>
-          </div>
+  if (successMessage) {
+    return (
+      <div className="checkout-page">
+        <div className="container">
+          <h1>Спасибо за заказ</h1>
+          <p>{successMessage}</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
+  if (cartItems.length === 0) {
     return (
       <div className="checkout-page">
         <div className="container">
