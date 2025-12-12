@@ -77,30 +77,37 @@ export const getCategories = async () => {
   return response.json();
 };
 
-// Auth API (логин только по паролю, username = 'admin')
-export const login = async (password) => {
-  // Убедимся, что пароль не перезаписывается
+// Auth API - вход с логином и паролем
+export const login = async (username, password) => {
+  const cleanUsername = String(username || '').trim();
   const cleanPassword = String(password || '').trim();
-  const payload = { username: 'admin', password: cleanPassword };
   
-  console.log('ADMIN LOGIN PAYLOAD (before fetch):', {
+  const payload = { 
+    username: cleanUsername, 
+    password: cleanPassword 
+  };
+  
+  console.log('LOGIN REQUEST:', {
+    username: cleanUsername,
     passwordLength: cleanPassword.length,
-    passwordStartsWith: cleanPassword.substring(0, 3) + (cleanPassword.length > 3 ? '...' : ''),
-    fullPayload: { ...payload, password: '***' } // Не логируем полный пароль
+    firstChars: cleanPassword.substring(0, 3) + (cleanPassword.length > 3 ? '...' : '')
   });
 
   const response = await fetch(`${API_BASE_URL}/admin/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Debug': 'true' // Добавим кастомный заголовок для отладки
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-Debug': 'true'
     },
     credentials: 'same-origin',
     body: JSON.stringify(payload),
   });
   
   if (!response.ok) {
-    throw new Error('Login failed');
+    const errorData = await response.json().catch(() => ({}));
+    console.error('Login failed:', response.status, errorData);
+    throw new Error(errorData.error || 'Ошибка при входе');
   }
   
   return response.json();

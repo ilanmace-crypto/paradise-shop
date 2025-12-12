@@ -18,19 +18,28 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
 
-  const login = async (password) => {
+  const login = async (username, password) => {
     try {
-      const trimmed = (password || '').trim();
-      if (!trimmed) {
-        console.error('Empty password provided');
-        return { success: false, error: 'Password is required' };
+      const cleanUsername = (username || '').trim();
+      const cleanPassword = String(password || '').trim();
+      
+      if (!cleanUsername) {
+        return { success: false, error: 'Имя пользователя обязательно' };
       }
       
-      console.log('Attempting login with password:', trimmed);
-      const result = await apiLogin(trimmed);
+      if (!cleanPassword) {
+        return { success: false, error: 'Пароль обязателен' };
+      }
+      
+      console.log('Attempting login with:', { 
+        username: cleanUsername,
+        passwordLength: cleanPassword.length 
+      });
+      
+      const result = await apiLogin(cleanUsername, cleanPassword);
       console.log('Login response:', result);
 
-      if (result && result.success && result.user && result.user.role === 'admin') {
+      if (result?.success && result.user?.role === 'admin') {
         setIsAuthenticated(true);
         setIsAdmin(true);
         setUser(result.user);
@@ -39,13 +48,13 @@ export const AuthProvider = ({ children }) => {
 
       return { 
         success: false, 
-        error: result?.error || 'Invalid credentials' 
+        error: result?.error || 'Неверное имя пользователя или пароль'
       };
     } catch (error) {
       console.error('Login error:', error);
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Login failed. Please try again.' 
+        error: 'Ошибка при входе. Пожалуйста, попробуйте еще раз.'
       };
     }
   };
