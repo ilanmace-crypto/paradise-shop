@@ -44,8 +44,7 @@ const LoginPage = () => {
           
           <div className="login-info">
             <p>Данные для входа:</p>
-            <p>Логин: admin</p>
-            <p>Пароль: paradise123</p>
+            <p>Пароль: paradise251208</p>
           </div>
         </div>
       </div>
