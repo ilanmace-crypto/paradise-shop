@@ -4,6 +4,8 @@ import './ProductModal.css';
 const ProductModal = ({ product, isOpen, onClose, onAddToCart, selectedFlavor, setSelectedFlavor }) => {
   if (!isOpen || !product) return null;
 
+  console.log('ProductModal product:', product);
+
   // Парсим flavors, если это строка
   let flavors = {};
   if (product.flavors) {
@@ -14,6 +16,8 @@ const ProductModal = ({ product, isOpen, onClose, onAddToCart, selectedFlavor, s
       flavors = {};
     }
   }
+
+  console.log('ProductModal parsed flavors:', flavors, 'category:', product.category);
 
   const handleAddToCart = () => {
     if (product.category === 'liquids' && Object.keys(flavors).length > 0 && !selectedFlavor) {
