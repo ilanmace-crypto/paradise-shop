@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
+import { sendOrderNotification } from '../services/telegram';
+import { useUser } from './UserContext';
 import { login as apiLogin } from '../services/apiService';
 
 const AuthContext = createContext();
@@ -16,22 +18,21 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Логин только по паролю: username всегда "admin"
+  // Логин только по паролю: username всегда "admin". Проверка делается на бэке.
   const login = async (password) => {
     try {
       const trimmed = (password || '').trim();
-      console.log('ADMIN PASS:', JSON.stringify(trimmed));
-      // Жёсткая фронтовая проверка пароля, чтобы не пускать случайных людей в админку
-      if (trimmed !== 'paradise251208' && trimmed !== 'admin') {
-        return false;
+      const result = await apiLogin(trimmed);
+
+      // backend возвращает { success, user: { id, username, role } }
+      if (result && result.success && result.user && result.user.role === 'admin') {
+        setIsAuthenticated(true);
+        setIsAdmin(true);
+        setUser(result.user);
+        return true;
       }
 
-      // Если пароль корректен — помечаем пользователя как админа локально
-      const fakeUser = { id: 1, username: 'admin', role: 'admin' };
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      setUser(fakeUser);
-      return true;
+      return false;
     } catch (error) {
       console.error('Login error:', error);
       return false;
