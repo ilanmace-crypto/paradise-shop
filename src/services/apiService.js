@@ -79,12 +79,15 @@ export const getCategories = async () => {
 
 // Auth API (логин только по паролю, username = 'admin')
 export const login = async (password) => {
+  const payload = { username: 'admin', password };
+  console.log('ADMIN LOGIN PAYLOAD:', JSON.stringify(payload));
+
   const response = await fetch(`${API_BASE_URL}/admin/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ username: 'admin', password }),
+    body: JSON.stringify(payload),
   });
   
   if (!response.ok) {
