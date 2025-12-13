@@ -25,6 +25,37 @@ export const createProduct = async (product) => {
   return response.json();
 };
 
+// Update product image specifically
+export const updateProductImage = async (id, imageBase64) => {
+  console.log('Updating product image:', id);
+  console.log('Image base64 length:', imageBase64.length);
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${id}/image`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ image: imageBase64 }),
+    });
+    
+    console.log('Image update response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Image update failed:', errorText);
+      throw new Error(`Failed to update image: ${response.status} ${errorText}`);
+    }
+    
+    const result = await response.json();
+    console.log('Image update successful:', result);
+    return result;
+  } catch (error) {
+    console.error('Image update error:', error);
+    throw error;
+  }
+};
+
 export const updateProduct = async (id, updates) => {
   console.log('Updating product:', id);
   console.log('Update data keys:', Object.keys(updates));

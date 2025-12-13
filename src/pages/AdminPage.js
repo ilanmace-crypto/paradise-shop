@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts, createProduct, updateProduct, deleteProduct as deleteProductApi } from '../data/products';
+import { updateProductImage } from '../services/apiService';
 import { categories } from '../data/products';
 import { fileToBase64, isValidImageFile, formatFileSize } from '../utils/imageUtils';
 import './AdminPage.css';
@@ -128,23 +129,26 @@ const AdminPage = () => {
         product.id === productId ? { ...product, image: base64Image } : product
       ));
       
-      // Сразу сохраняем на сервер
-      const product = products.find(p => p.id === productId);
-      if (product) {
-        console.log('Found product to update:', product.id);
-        console.log('Sending update with image length:', base64Image.length);
-        
-        const updateData = { ...product, image: base64Image };
-        console.log('Update data keys:', Object.keys(updateData));
-        
-        await updateProduct(productId, updateData);
-        console.log('Image saved to server for product:', productId);
-      } else {
-        console.error('Product not found for id:', productId);
-      }
+      // Используем специальный endpoint для изображений
+      console.log('Using dedicated image endpoint...');
+      await updateProductImage(productId, base64Image);
+      console.log('Image saved to server for product:', productId);
     } catch (error) {
       console.error('Image upload error:', error);
       alert('Ошибка при загрузке изображения: ' + error.message);
+      
+      // Если специальный endpoint не работает, пробуем обычный
+      try {
+        console.log('Trying fallback to regular update...');
+        const product = products.find(p => p.id === productId);
+        if (product) {
+          await updateProduct(productId, { ...product, image: base64Image });
+          console.log('Image saved via fallback for product:', productId);
+        }
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+        alert('Не удалось сохранить изображение. Попробуйте еще раз.');
+      }
     } finally {
       setUploadingImage(null);
     }
