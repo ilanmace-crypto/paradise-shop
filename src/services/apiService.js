@@ -26,19 +26,37 @@ export const createProduct = async (product) => {
 };
 
 export const updateProduct = async (id, updates) => {
-  const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updates),
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to update product');
+  console.log('Updating product:', id);
+  console.log('Update data keys:', Object.keys(updates));
+  console.log('Has image field:', 'image' in updates);
+  if ('image' in updates) {
+    console.log('Image length:', updates.image ? updates.image.length : 'undefined');
   }
   
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+    
+    console.log('Update response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Update failed response:', errorText);
+      throw new Error(`Failed to update product: ${response.status} ${errorText}`);
+    }
+    
+    const result = await response.json();
+    console.log('Update successful, result keys:', Object.keys(result));
+    return result;
+  } catch (error) {
+    console.error('Update product error:', error);
+    throw error;
+  }
 };
 
 export const deleteProduct = async (id) => {

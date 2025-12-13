@@ -105,6 +105,8 @@ const AdminPage = () => {
   };
 
   const handleImageUpload = async (productId, file) => {
+    console.log('Starting image upload for product:', productId);
+    
     if (!isValidImageFile(file)) {
       alert('Пожалуйста, выберите изображение (JPEG, PNG, GIF, WebP)');
       return;
@@ -119,6 +121,7 @@ const AdminPage = () => {
     
     try {
       const base64Image = await fileToBase64(file);
+      console.log('Image converted to base64, length:', base64Image.length);
       
       // Обновляем локальное состояние
       setProducts(prev => prev.map(product => 
@@ -128,12 +131,20 @@ const AdminPage = () => {
       // Сразу сохраняем на сервер
       const product = products.find(p => p.id === productId);
       if (product) {
-        await updateProduct(productId, { ...product, image: base64Image });
+        console.log('Found product to update:', product.id);
+        console.log('Sending update with image length:', base64Image.length);
+        
+        const updateData = { ...product, image: base64Image };
+        console.log('Update data keys:', Object.keys(updateData));
+        
+        await updateProduct(productId, updateData);
         console.log('Image saved to server for product:', productId);
+      } else {
+        console.error('Product not found for id:', productId);
       }
     } catch (error) {
-      alert('Ошибка при загрузке изображения: ' + error.message);
       console.error('Image upload error:', error);
+      alert('Ошибка при загрузке изображения: ' + error.message);
     } finally {
       setUploadingImage(null);
     }
