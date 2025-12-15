@@ -354,10 +354,10 @@
   border-radius: 12px !important;
   margin-top: 8px !important;
   z-index: 100 !important;
-  max-height: 250px !important;
+  max-height: 340px !important;
   overflow-y: auto !important;
-  padding: 6px 0 10px !important;
-  scroll-padding-bottom: 12px;
+  padding: 6px 0 20px !important;
+  scroll-padding-bottom: 24px;
   overscroll-behavior: contain;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;

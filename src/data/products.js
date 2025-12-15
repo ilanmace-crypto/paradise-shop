@@ -84,6 +84,12 @@ export const getProducts = async () => {
         .trim()
         .toLowerCase();
 
+      const normalizedCategoryRaw = String(product.category || '')
+        .trim()
+        .toLowerCase();
+
+      const categoryIdNum = Number(product.category_id);
+
       // Map backend category_name to frontend category id
       const matchedCategory = categories.find(
         (cat) => cat.name === product.category_name
@@ -105,13 +111,57 @@ export const getProducts = async () => {
 
       const inferredCategory = (() => {
         if (matchedCategory) return matchedCategory.id;
-        if (normalizedCategoryName.includes('карт')) return 'cartridges';
-        if (normalizedCategoryName.includes('однораз')) return 'disposable';
-        if (normalizedCategoryName.includes('жидк')) return 'liquids';
+
+        // Если бэк отдаёт category_id числом (1/2/3), используем его.
+        // Числа могут отличаться, поэтому делаем мягкие проверки по имени категории,
+        // но чаще всего: 1=Жидкости, 2=Картриджи, 3=Одноразовые.
+        if (Number.isFinite(categoryIdNum)) {
+          if (categoryIdNum === 2) return 'cartridges';
+          if (categoryIdNum === 3) return 'disposable';
+          if (categoryIdNum === 1) return 'liquids';
+        }
+
+        const haystack = `${normalizedCategoryName} ${normalizedCategoryRaw}`;
+
+        // Синонимы картриджей ("карики", pod, cartridge)
+        if (
+          haystack.includes('карт') ||
+          haystack.includes('кари') ||
+          haystack.includes('pod') ||
+          haystack.includes('cart') ||
+          haystack.includes('cartr')
+        ) {
+          return 'cartridges';
+        }
+
+        if (haystack.includes('однораз') || haystack.includes('dispos')) return 'disposable';
+        if (haystack.includes('жидк') || haystack.includes('liquid')) return 'liquids';
         return null;
       })();
 
-      const mappedCategory = inferredCategory || (product.category || (hasFlavors ? 'liquids' : null));
+      const mappedFromRawCategory = (() => {
+        // Иногда бэк отдаёт category как число/строку числа (например 2),
+        // а фронт ожидает строковые ids (liquids/cartridges/disposable).
+        if (Number.isFinite(categoryIdNum)) {
+          if (categoryIdNum === 2) return 'cartridges';
+          if (categoryIdNum === 3) return 'disposable';
+          if (categoryIdNum === 1) return 'liquids';
+        }
+
+        const rawNum = Number(normalizedCategoryRaw);
+        if (Number.isFinite(rawNum) && normalizedCategoryRaw !== '') {
+          if (rawNum === 2) return 'cartridges';
+          if (rawNum === 3) return 'disposable';
+          if (rawNum === 1) return 'liquids';
+        }
+
+        if (normalizedCategoryRaw === 'cartridges') return 'cartridges';
+        if (normalizedCategoryRaw === 'disposable') return 'disposable';
+        if (normalizedCategoryRaw === 'liquids') return 'liquids';
+        return null;
+      })();
+
+      const mappedCategory = inferredCategory || mappedFromRawCategory || (hasFlavors ? 'liquids' : null);
 
       return {
         ...product,
