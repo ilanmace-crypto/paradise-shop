@@ -118,6 +118,13 @@
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s;
+  color: #111;
+  background: #fff;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #6b7280;
 }
 
 .form-group input:focus,
