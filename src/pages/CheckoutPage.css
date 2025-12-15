@@ -122,9 +122,42 @@
   background: #fff;
 }
 
+.checkout-page .checkout-form .form-group input,
+.checkout-page .checkout-form .form-group textarea {
+  color: #111 !important;
+  caret-color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
+  background: #fff !important;
+}
+
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: #6b7280;
+}
+
+.checkout-page .checkout-form .form-group input::placeholder,
+.checkout-page .checkout-form .form-group textarea::placeholder {
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}
+
+.checkout-page .checkout-form .form-group input::selection,
+.checkout-page .checkout-form .form-group textarea::selection {
+  background: rgba(102, 126, 234, 0.25);
+  color: #111;
+}
+
+.checkout-page .checkout-form .form-group input::-moz-selection,
+.checkout-page .checkout-form .form-group textarea::-moz-selection {
+  background: rgba(102, 126, 234, 0.25);
+  color: #111;
+}
+
+.checkout-page .checkout-form .form-group input:-webkit-autofill,
+.checkout-page .checkout-form .form-group textarea:-webkit-autofill {
+  -webkit-text-fill-color: #111 !important;
+  box-shadow: 0 0 0px 1000px #fff inset;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .form-group input:focus,
