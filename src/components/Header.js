@@ -154,11 +154,6 @@ const Header = () => {
             {error && <div className="error-message">{error}</div>}
             <button type="submit">Войти</button>
           </form>
-          <div className="login-hint">
-            <p>Тестовые данные:</p>
-            <p>Логин: <strong>admin</strong></p>
-            <p>Пароль: <strong>paradise251208</strong></p>
-          </div>
         </div>
       </div>
       
