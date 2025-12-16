@@ -2,7 +2,7 @@
   "name": "paradise-shop",
   "version": "1.0.0",
   "description": "PARADISE_SHOP - Интернет магазин",
-  "main": "server-main.js",
+  "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -11,7 +11,7 @@
     "server": "cd server && npm start",
     "server-dev": "cd server && npm run dev",
     "init-db": "cd server && npm run init-db",
-    "dev": "node server-main.js"
+    "dev": "node index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
