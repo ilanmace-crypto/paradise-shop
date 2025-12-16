@@ -1,0 +1,6 @@
+{
+  "env": "production",
+  "start": "node server/server.js",
+  "watch": ["server", "src"],
+  "ignore": ["node_modules", ".git"]
+}
