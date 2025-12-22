@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://paradise-shop-api-production-70b5.up.railway.app/api';
+// Для GitHub Pages используем относительный URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || './api';
 
 // Кэш для API запросов
 const apiCache = new Map();
